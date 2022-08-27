@@ -100,7 +100,7 @@ def gradient_descent(X, Y, w, b, alpha, iteration_count, lambda_reg=0, log_verbo
     for i in range(iteration_count+1):
         Y_hat = prediction_function(X, w, b, activation=sigmoid)
         cost = regularized_cost_function(Y_hat, Y, w, lambda_reg)
-        GD_log =  np.vstack([GD_log, [i, cost, w, b]])
+        GD_log =  np.vstack([GD_log, np.array([i, cost, w, b], dtype=object)])
         # Print a log message every 1000 iteration
         if(i%log_verbosity ==0):
             print(f'Iteration #{i}: cost={cost:.2f}\tw={w}\tb={b:.2f}, ')
