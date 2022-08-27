@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-def read_data(filename, feature_count):  
+def read_data(filename, feature_count):
     """
     Reads comma separated data file and returns features and targets based on feature_count
     """
@@ -9,7 +9,7 @@ def read_data(filename, feature_count):
     X_train = dataset[:,0:feature_count]
     Y_train = dataset[:,-1]
     return X_train, Y_train
-    
+
 def plot_binary_classification_data(X_train, Y_train, good_label='pass', bad_label='fail', boundary=None, scatter_boundary=False):
     """
     Plots binary classification training data that has 2 features
@@ -30,6 +30,25 @@ def plot_binary_classification_data(X_train, Y_train, good_label='pass', bad_lab
     plt.title("X1-X2 scatter plot")
     plt.xlabel('X1_train')
     plt.ylabel('X2_train')
+    plt.show()
+
+def plot_linear_data(X_train, Y_train, fit_data=None, polynomial_fit=False):
+    """
+    Plots linear training data
+    """
+    plt.scatter(X_train, Y_train, marker = '.', c='orange', label = 'training data')
+    if fit_data is not None:
+        if polynomial_fit:
+            # TODO: Implement
+            pass
+        else:
+            plt.plot(X_train, fit_data, c='lime', label='Fitting line')
+
+    plt.legend(loc='lower right')
+    plt.style.use('dark_background')
+    plt.title("X-Y scatter plot")
+    plt.xlabel('X')
+    plt.ylabel('Y')
     plt.show()
     
 def sigmoid(Z):
@@ -53,15 +72,15 @@ def model_accuracy(Y, Y_hat, boundary_threshold=0.5):
     #Ratio of correct guesses
     accuracy = np.mean(P==Y) * 100
     return accuracy
-    
+
 def prediction_function(X, w, b, activation=linear):
     """
     w can be an array of weights depending on the number of features in X
-    Returns Y_hat (the predicted values) for X based on b and w parameters 
+    Returns Y_hat (the predicted values) for X based on b and w parameters
     y_hat = g(z) = 1/(1 + e^-z) for Logestic Regression (Z= w*X + b)
     """
-    
-    
+
+
     if X.ndim > 1:
         # More than 1 feature
         # Z = w1*X1 + w2*X2+ w3*X3 ... + b
@@ -70,10 +89,17 @@ def prediction_function(X, w, b, activation=linear):
     else:
         # One feature case
         Z = w * X + b
-    
+
     # Call the passed activation function to get the predicted value(linear by default)
     Y_hat = activation(Z)
     return Y_hat
+
+def linear_regression_cost_function(Y_hat, Y):
+    """
+    Returns the cost J over based on the Y_hat(prediction) and Y (ground truth) data
+    """
+    J = np.mean(0.5 * (Y_hat - Y) ** 2)
+    return J
 
 def cost_function(Y_hat, Y):
     """
@@ -90,7 +116,7 @@ def regularized_cost_function(Y_hat, Y, w, lambda_reg=0):
     J = cost_function(Y_hat, Y) + reg_term
     return J
 
-def gradient_descent(X, Y, w, b, alpha, iteration_count, lambda_reg=0, log_verbosity=1000):
+def gradient_descent(X, Y, w, b, alpha, iteration_count, lambda_reg=0, log_verbosity=1000, logistic=True):
     """
     Implements the Gradient Descent algorithm.
     Returns a log of the GD iterations with the optimum values [iteration num, cost, w, b] in the last entry
@@ -98,8 +124,8 @@ def gradient_descent(X, Y, w, b, alpha, iteration_count, lambda_reg=0, log_verbo
     """
     GD_log = np.empty((0,4), dtype=float)
     for i in range(iteration_count+1):
-        Y_hat = prediction_function(X, w, b, activation=sigmoid)
-        cost = regularized_cost_function(Y_hat, Y, w, lambda_reg)
+        Y_hat = prediction_function(X, w, b, activation=sigmoid if logistic else linear)
+        cost = regularized_cost_function(Y_hat, Y, w, lambda_reg) if logistic else linear_regression_cost_function(Y_hat, Y)
         GD_log =  np.vstack([GD_log, np.array([i, cost, w, b], dtype=object)])
         # Print a log message every 1000 iteration
         if(i%log_verbosity ==0):
@@ -107,17 +133,17 @@ def gradient_descent(X, Y, w, b, alpha, iteration_count, lambda_reg=0, log_verbo
         Y_error = (Y_hat - Y)
         #Transoform Y_error a bit to make multiplication with multi-dimensional X possible
         Y_error = np.transpose([Y_error] * X.shape[1])
-        
+
         dJ_dw = np.mean(Y_error * X, axis=0)
         dJ_dw += (lambda_reg * w) / X.shape[0]
         dJ_db = np.mean((Y_hat - Y))
-        
+
         w = w - alpha * dJ_dw
         b = b - alpha * dJ_db
     optimal_w = GD_log[-1,2]
     optimal_b = GD_log[-1,3]
     print(f'Optimal parameters: Iteration {GD_log[-1,0]}, cost: {GD_log[-1,1]}, optimal w: {optimal_w}, optimal b: {optimal_b}')
-    return optimal_w, optimal_b
+    return optimal_w, optimal_b, GD_log
 
 def polynomial_feature_mapper(X, degree):
     """
