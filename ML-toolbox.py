@@ -51,7 +51,7 @@ def model_accuracy(Y, Y_hat, boundary_threshold=0.5):
     # Threshold Y_hat over 0.5
     P = np.where(Y_hat < boundary_threshold, 0, 1)
     #Ratio of correct guesses
-    accuracy = np.mean(P==Y_train) * 100
+    accuracy = np.mean(P==Y) * 100
     return accuracy
     
 def prediction_function(X, w, b, activation=linear):
