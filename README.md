@@ -1,5 +1,5 @@
 # About
-A repository to test around with machine learning concepts. 
+This a WIP repository to test around with machine learning concepts based on Andrew Ng's courses in the `Machine Learning` and the `Deep Learning` specializations on coursera. 
 
 Projects will be trained in two ways:
 - Manual implementation of basic algorithms (functions in `ML-toolbox.py`)
