@@ -15,7 +15,7 @@ My notes of Andrew Ng's Deep Learning specialization courses.
   - inputs go to one node only and that node gives the output.
 
 #### Matrices and array sizes / broadcasting/ vectorization
-- TODO: Add link to matrix multiplication notebook
+- [Link to matrix multiplication notebook](./matrix_multiplication_reference.ipynb)
 - shape: `(n,)` : is called a `rank1` array and it's a best practice to avoid using it, always use `(n,1)` shape instead.
   - To avoid rank1 array outputs in numpy functions, use `keep_dims=True`.
   - Use python `assert` statements to make sure shapes are as expected.
