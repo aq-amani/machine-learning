@@ -7,3 +7,9 @@ Projects will be trained in two ways:
 
 ## ML-toolbox.py
 My implementation of basic ML algorithms and functions to test my understanding of the subject 
+
+## :hammer_and_wrench: Environment Setup
+```bash
+pipenv install --ignore-pipfile --skip-lock
+pipenv run jupyter notebook
+```
