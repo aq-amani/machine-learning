@@ -1,0 +1,7 @@
+gym
+imageio
+pandas
+statsmodels
+pyvirtualdisplay
+gym[box2d]
+imageio[ffmpeg]
