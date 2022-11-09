@@ -13,7 +13,6 @@ def initialize_parameters_deep(layer_dims, layer_size_relative_scaling=False):
                     bl -- bias vector of shape (layer_dims[l], 1)
     """
 
-    np.random.seed(1)
     parameters = {}
     L = len(layer_dims) # number of layers in the network
 
@@ -318,7 +317,6 @@ def train_L_layer_model(X, Y, layers_dims, learning_rate = 0.0075, num_iteration
     parameters -- parameters learnt by the model. They can then be used to predict.
     """
 
-    np.random.seed(1)
     costs = []                         # keep track of cost
 
     # Parameters initialization.
