@@ -300,7 +300,7 @@ def update_parameters(params, grads, learning_rate):
         parameters["b" + str(l+1)] = parameters["b" + str(l+1)] - learning_rate * grads["db" + str(l+1)]
     return parameters
 
-def train_L_layer_model(X, Y, layers_dims, learning_rate = 0.0075, num_iterations = 3000, print_cost=False, h_layer_activations="relu"):
+def train_L_layer_model(X, Y, layers_dims, learning_rate = 0.0075, num_iterations = 3000, print_cost=False, h_layer_activations="relu", layer_size_relative_scaling=True):
     """
     Training full cycle for an L-layer neural network: [LINEAR->g(z)]*(L-1)->LINEAR->SIGMOID.
     Initialize then iterate over forward_prop -> cost -> backward_prop -> update_parameters (gradient descent)
@@ -312,6 +312,9 @@ def train_L_layer_model(X, Y, layers_dims, learning_rate = 0.0075, num_iteration
     learning_rate -- learning rate of the gradient descent update rule
     num_iterations -- number of iterations of the optimization loop
     print_cost -- if True, it prints the cost every 100 steps
+    h_layer_activations --  activation type for hidden layers. relu by default
+    layer_size_relative_scaling -- whether to scale W random values based on previous layer size or not
+    (will scale by *0.01 by default)
 
     Returns:
     parameters -- parameters learnt by the model. They can then be used to predict.
@@ -320,7 +323,7 @@ def train_L_layer_model(X, Y, layers_dims, learning_rate = 0.0075, num_iteration
     costs = []                         # keep track of cost
 
     # Parameters initialization.
-    parameters = initialize_parameters_deep(layers_dims, layer_size_relative_scaling=True)
+    parameters = initialize_parameters_deep(layers_dims, layer_size_relative_scaling)
 
     # Loop (gradient descent)
     for i in range(0, num_iterations):
