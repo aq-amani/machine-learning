@@ -61,6 +61,22 @@ def relu(Z):
 
     return A
 
+def tanh(Z):
+    """
+    tanh activation function.
+
+    Arguments:
+    Z -- Output of the linear layer, of any shape
+
+    Returns:
+    A -- Post-activation parameter, of the same shape as Z
+    """
+
+    A = np.tanh(Z)
+    assert(A.shape == Z.shape)
+
+    return A
+
 # Linear
 def linear_forward(A, W, b):
     """
@@ -89,7 +105,7 @@ def activation_forward(Z, activation):
 
     Arguments:
     Z -- the output of the linear forward function
-    activation -- the activation to be used in this layer, stored as a text string: "sigmoid" or "relu"
+    activation -- the activation to be used in this layer, stored as a text string: "sigmoid", "relu" or "tanh"
 
     Returns:
     A -- the output of the activation function, also called the post-activation value
@@ -101,17 +117,21 @@ def activation_forward(Z, activation):
 
     elif activation == "relu":
         A = relu(Z)
+    elif activation == "tanh":
+        A = tanh(Z)
 
     return A, cache
 
 # Controller for forward propagation
-def forward_propagator(X, parameters):
+def forward_propagator(X, parameters, h_layer_activations="relu"):
     """
-    Implement forward propagation for the [LINEAR->RELU]*(L-1)->LINEAR->SIGMOID computation
+    Implement forward propagation for the [LINEAR->g(z)]*(L-1)->LINEAR->SIGMOID computation
+    hidden layer activations are relu by default.
 
     Arguments:
     X -- data, numpy array of shape (input size, number of examples)
     parameters -- output of initialize_parameters_deep(). Can also be used to get the layer count.
+    h_layer_activations -- activation type for hidden layers. relu by default
 
     Returns:
     AL -- activation value from the output (last) layer
@@ -123,14 +143,14 @@ def forward_propagator(X, parameters):
     A = X
     L = len(parameters) // 2  # number of layers in the neural network
 
-    # [LINEAR -> RELU]*(L-1). Add "cache" to the "caches" list.
+    # [LINEAR -> g(z)]*(L-1). Add "cache" to the "caches" list.
     # The for loop starts at 1 because layer 0 is the input
     for l in range(1, L):
         A_prev = A
         # Linear function
         Z, linear_cache = linear_forward(A_prev, parameters['W' + str(l)], parameters['b' + str(l)])
         # Activation function
-        A, activation_cache = activation_forward(Z, "relu")
+        A, activation_cache = activation_forward(Z, h_layer_activations)
         cache = (linear_cache, activation_cache)
         caches.append(cache)
 
@@ -187,6 +207,11 @@ def activation_function_derivative(Z, activation_type):
         # derivative of sigmoid (s) is  s * (1-s)
         s = sigmoid(Z)
         g_prime = s * (1-s)
+    elif activation_type == "tanh":
+        # Derivative of tanh(x) is (1 - tanh^2(x))
+        t = tanh(Z)
+        g_prime = 1 - np.power(t, 2)
+
     return g_prime
 
 # dW, db, dA_prev
@@ -206,16 +231,17 @@ def get_gradients(dA_l, cache, activation):
     return dA_prev_l, dW_l, db_l
 
 # Controller for backwards propagation
-def backward_propagator(A_L, Y, caches):
+def backward_propagator(A_L, Y, caches, h_layer_activations="relu"):
     """
-    Backward propagation for a [LINEAR->RELU] * (L-1) -> [LINEAR -> SIGMOID] NN
+    Backward propagation for a [LINEAR->g(z)] * (L-1) -> [LINEAR -> SIGMOID] NN
 
     Arguments:
     A_L -- probability vector, output of the forward propagation (also equals y_hat)
     Y -- true "label" vector (containing 0 if non-cat, 1 if cat)
     caches -- list of caches containing:
-                every cache of linear_activation_forward() with "relu" (it's caches[l], for l in range(L-1) i.e l = 0...L-2)
+                every cache of linear_activation_forward() with g(z) (it's caches[l], for l in range(L-1) i.e l = 0...L-2)
                 the cache of linear_activation_forward() with "sigmoid" (it's caches[L-1])
+    h_layer_activations --  activation type for hidden layers. relu by default
 
     Returns:
     grads -- A dictionary with the gradients
@@ -239,13 +265,13 @@ def backward_propagator(A_L, Y, caches):
 
     # From l=L-1 to 1
     for l in reversed(range(1, L)):
-        # lth layer: (RELU -> LINEAR) gradients.
+        # lth layer: (g(z) -> LINEAR) gradients.
         # Inputs: "grads["dA" + str(l + 1)], current_cache". Outputs: "grads["dA" + str(l)] , grads["dW" + str(l + 1)] , grads["db" + str(l + 1)]
 
         cache_l = caches[l-1] # list indices are 0~L-1, while layer naming is 1~L (for layer l, index is l-1)
         dA_l = grads["dA" + str(l)]
 
-        dA_prev_l, dW_l, db_l = get_gradients(dA_l, cache_l, "relu")
+        dA_prev_l, dW_l, db_l = get_gradients(dA_l, cache_l, h_layer_activations)
 
         grads["dA" + str(l - 1)] = dA_prev_l
         grads["dW" + str(l)] = dW_l
@@ -275,9 +301,9 @@ def update_parameters(params, grads, learning_rate):
         parameters["b" + str(l+1)] = parameters["b" + str(l+1)] - learning_rate * grads["db" + str(l+1)]
     return parameters
 
-def train_L_layer_model(X, Y, layers_dims, learning_rate = 0.0075, num_iterations = 3000, print_cost=False):
+def train_L_layer_model(X, Y, layers_dims, learning_rate = 0.0075, num_iterations = 3000, print_cost=False, h_layer_activations="relu"):
     """
-    Training full cycle for an L-layer neural network: [LINEAR->RELU]*(L-1)->LINEAR->SIGMOID.
+    Training full cycle for an L-layer neural network: [LINEAR->g(z)]*(L-1)->LINEAR->SIGMOID.
     Initialize then iterate over forward_prop -> cost -> backward_prop -> update_parameters (gradient descent)
 
     Arguments:
@@ -301,14 +327,14 @@ def train_L_layer_model(X, Y, layers_dims, learning_rate = 0.0075, num_iteration
     # Loop (gradient descent)
     for i in range(0, num_iterations):
 
-        # Forward propagation: [LINEAR -> RELU]*(L-1) -> LINEAR -> SIGMOID.
-        AL, caches = forward_propagator(X, parameters)
+        # Forward propagation: [LINEAR -> g(z)]*(L-1) -> LINEAR -> SIGMOID.
+        AL, caches = forward_propagator(X, parameters, h_layer_activations)
 
         # Compute cost.
         cost = compute_cost(AL, Y)
 
         # Backward propagation.
-        grads = backward_propagator(AL, Y, caches)
+        grads = backward_propagator(AL, Y, caches, h_layer_activations)
 
         # Update parameters.
         parameters = update_parameters(parameters, grads, learning_rate)
@@ -321,7 +347,7 @@ def train_L_layer_model(X, Y, layers_dims, learning_rate = 0.0075, num_iteration
 
     return parameters, costs
 
-def predict(X, y, parameters):
+def predict(X, y, parameters, h_layer_activations="relu"):
     """
     This function is used to predict the results of a  L-layer neural network.
 
@@ -339,7 +365,7 @@ def predict(X, y, parameters):
 
     # Forward propagation
     # y_hat is probabilities
-    y_hat, caches = forward_propagator(X, parameters)
+    y_hat, caches = forward_propagator(X, parameters, h_layer_activations)
 
     # convert y_hat to 0/1 predictions
     y_predictions = np.where(y_hat > 0.5, 1, 0)
