@@ -50,7 +50,22 @@ def plot_linear_data(X_train, Y_train, fit_data=None, polynomial_fit=False):
     plt.xlabel('X')
     plt.ylabel('Y')
     plt.show()
-    
+
+def my_softmax(z):
+    """
+    A Numpy implementation of the softmax function (generalization of logistic regression for multi-class cases)
+    Softmax converts a vector of values to a probability distribution.
+    Args:
+      z (ndarray (N,))  : input data, N features
+    Returns:
+      a (ndarray (N,))  : softmax of z
+    """
+
+    e_z = np.exp(z)
+    a = e_z / np.sum(e_z, axis=0)
+
+    return a
+
 def sigmoid(Z):
     """
     g(Z) = 1/(1 + e^-Z)
