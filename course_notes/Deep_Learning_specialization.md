@@ -175,41 +175,49 @@ when `γ` = `σ` and `β` = `μ`, then `Z_new` is equal to `Z` (no normalization
 
 # Course4: Convolutional Neural Networks
 
-Neural Style Transfer: repaint an image in another style(picasso style for example)
+`Neural Style Transfer`: repaint an image in another style(picasso style for example)
+
+### Convolution
 - Convolution operation, horizontal edge detection and vertical edge detection.
-Uses filters (AKA kernels).
---> technically it is a cross-correlation operation since no filter flipping takes place first, but in ML literature it is called convolution.
-Convolution operation between matrices is denoted by *
-Take filter, scan it over the whole image while multiplying and summing all elements. Each area results in one number.
-6x6 matrix convoluted with 3x3 filter, will give a 4x4 matrix (3 element array can be shifted 4 times in a 6 element array ) (outsize= n -f +1)
-many variations of filters, but it's better to let the NN learn the filters by having the 3x3 filter values as w parameters.
-Padding: since image shrinks with convolution, and since corner pixels get used only once in calculations, we can preserve original size by padding(adding a border of 0s)
-6x6 img --> 8x8 img after padding.
-*valid convolution: no padding
-*same convolution: padding to retain original img size after convolution
-*Strided convolution: stride = n, and means how many steps to slide the filter each time.
---> out size = floor ((n +2p - f)/S + 1)
+- Uses filters (AKA kernels).
+- technically it is a cross-correlation operation since no filter flipping takes place first, but in ML literature it is called convolution.
+- Convolution operation between matrices is denoted by *
+- How is it done : Take filter, scan it over the whole image while multiplying and summing all elements. Each area results in one number.
+  - 6x6 matrix convoluted with 3x3 filter, will give a 4x4 matrix (3 element array can be shifted 4 times in a 6 element array ) (outsize= n -f +1)
+- many variations of filters, but it's better to let the NN learn the filters by having the fxf filter values as w parameters.
+- `Padding`: since image shrinks with convolution, and since corner pixels get used only once in calculations, we can preserve original size by padding(adding a border of 0s to the input)
+  - 6x6 img --> 8x8 img after padding by a border of 1 pixel.
+### Convolution types
+- `valid convolution`: no padding.
+  - `out size = n -f +1` 
+- `same convolution`: padding to retain original img size after convolution (pad = p)
+  - `out size = n +2p -f +1` 
+- `Strided convolution`: stride = S, and means how many steps to slide the filter each time.
+  - `out size = floor ((n +2p - f)/S + 1)`
 
-* For RGB images, we have 3 matrices for each image, each for one channel R, G and B. (# channels also called depth)
-Filters will have 3 matrices too(each filter is a volume with number of channels equal to that of input channel count).
-Each filter has it's own single bias value. filter values are weights.
---> So conv layer parameters are the count of weights and biases in filters and not the feature count by neuron count like in dense layers
-If want edges only in red channel, then use edge filter for red and set G and B to zeros.
-If want edges regardless of channel, set all 3 filters to the edge filter.
-outputs are only one flat matrix, since we sum over the channels too when doing convolution.
---> when using multiple filters, the output depth will be equal to the filter count. One sheet for each filter.
+### RGB images
+- For RGB images, we have 3 matrices for each image, each for one channel R, G and B. (# channels also called depth)
+- Filters will have 3 matrices too(each filter is a volume with number of channels equal to that of input channel count).
+- Each filter has it's own single bias value. filter values are weights.
+  - So conv layer parameters are the count of weights and biases in filters and not the feature count by neuron count like in dense layers
+- If want edges only in red channel, then use edge filter for red and set G and B to zeros.
+- If want edges regardless of channel, set all 3 filters to the edge filter.
+- outputs are only one flat matrix, since we sum over the channels too when doing convolution.
+  - when using multiple filters, the output depth will be equal to the filter count. One sheet for each filter.
 
-* CNNs can be built using convolutional layers(conv) only, but many architectures use Pooling layers(Pool) and fully connected layers(FC)
+### Layer types: Conv, Pool and FC
+CNNs can be built using `convolutional layers(conv)` only, but many architectures use `Pooling layers(Pool)` and `fully connected layers(FC)`(Dense layers)
 
-* Pooling layer: Max pooling: taking regions on img equal to filter size and taking one max value out of it. (parameters: stride and filter size)
-4x4 img and 2x2 pooling filter --> 2x2 output
-max pooling is done independently on each channel, so output has same num of channels as inputs.
-Average pooling also exists.
---> in pooling there are no parameters to learn.
-Usually have conv layer and pooling layer after it, and those combined is counted as 1 layer.
-At last, the output is flattened (rolled out) into a single vector to feed to a number of FC layers (normal NN dense layers) that give final output.
+- Pooling layer: Max pooling: taking regions on img equal to filter size and taking one max value out of it. (parameters: stride and filter size)
+  - 4x4 img and 2x2 pooling filter --> 2x2 output
+  - max pooling is done independently on each channel, so output has same num of channels as inputs.
+  - Average pooling also exists.
+  - in pooling there are no parameters to learn.
 
-*Classical conv nets:
+- We usually have conv layer and pooling layer after it, and those combined are counted as 1 layer.
+- At last, the output is flattened (rolled out) into a single vector to feed to a number of FC layers (normal NN dense layers) that give final output.
+
+### Classical conv nets:
 - LeNet-5
 - AlexNet
 - VGG-16
