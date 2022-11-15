@@ -179,7 +179,7 @@ when `γ` = `σ` and `β` = `μ`, then `Z_new` is equal to `Z` (no normalization
 
 ### Convolution
 - Convolution operation, horizontal edge detection and vertical edge detection.
-- Uses filters (AKA kernels).
+- Each layer has a number of filters (AKA kernels), as opposed to neurons.
 - technically it is a cross-correlation operation since no filter flipping takes place first, but in ML literature it is called convolution.
 - Convolution operation between matrices is denoted by *
 - How is it done : Take filter, scan it over the whole image while multiplying and summing all elements. Each area results in one number.
@@ -187,6 +187,7 @@ when `γ` = `σ` and `β` = `μ`, then `Z_new` is equal to `Z` (no normalization
 - many variations of filters, but it's better to let the NN learn the filters by having the fxf filter values as w parameters.
 - `Padding`: since image shrinks with convolution, and since corner pixels get used only once in calculations, we can preserve original size by padding(adding a border of 0s to the input)
   - 6x6 img --> 8x8 img after padding by a border of 1 pixel.
+
 ### Convolution types
 - `valid convolution`: no padding.
   - `out size = n -f +1` 
@@ -209,13 +210,30 @@ when `γ` = `σ` and `β` = `μ`, then `Z_new` is equal to `Z` (no normalization
 CNNs can be built using `convolutional layers(conv)` only, but many architectures use `Pooling layers(Pool)` and `fully connected layers(FC)`(Dense layers)
 
 - Pooling layer: Max pooling: taking regions on img equal to filter size and taking one max value out of it. (parameters: stride and filter size)
-  - 4x4 img and 2x2 pooling filter --> 2x2 output
+  - same formula for output width and height as that of filters
   - max pooling is done independently on each channel, so output has same num of channels as inputs.
   - Average pooling also exists.
   - in pooling there are no parameters to learn.
 
 - We usually have conv layer and pooling layer after it, and those combined are counted as 1 layer.
 - At last, the output is flattened (rolled out) into a single vector to feed to a number of FC layers (normal NN dense layers) that give final output.
+
+### Filter and Pooling output sizes
+**Filters**
+- Each conv layer has a number of filters
+- Each of these filters has a depth equal to the input's depth (channel count)
+- Each filter's output is flat (depth is 1) as it's summed over the channels
+- But the layer's output depth is equal to the filter count
+- Example
+  - 10 filters each of size 4x4x3, where 3 is channel count
+  - Output width,height: calculate based on formulas
+  - Output depth:  10 (filter count)
+
+**Pooling**
+- max, averaging
+- usually grouped with conv layers as one layer
+- Output for width and height: same formulas as filters
+- Output depth: equals input depth, as pooling is applied to each channel separately.
 
 ### Classical conv nets:
 - LeNet-5
