@@ -218,11 +218,11 @@ CNNs can be built using `convolutional layers(conv)` only, but many architecture
 - We usually have conv layer and pooling layer after it, and those combined are counted as 1 layer.
 - At last, the output is flattened (rolled out) into a single vector to feed to a number of FC layers (normal NN dense layers) that give final output.
 
-### Filter and Pooling output sizes
-**Filters**
+### Conv filters and Pooling output sizes
+**Conv filters**
 - Each conv layer has a number of filters
 - Each of these filters has a depth equal to the input's depth (channel count)
-- Each filter's output is flat (depth is 1) as it's summed over the channels
+- Each filter's output is flat (2D / depth is 1) as output is summed over the channels
 - But the layer's output depth is equal to the filter count
 - Example
   - 10 filters each of size 4x4x3, where 3 is channel count
