@@ -239,7 +239,9 @@ CNNs can be built using `convolutional layers(conv)` only, but many architecture
 - LeNet-5
 - AlexNet
 - VGG-16
-- ResNets: output of a layer skips some layers and goes directly to deeper layers.
+- ResNets: 
+  - output of a layer skips some layers and goes directly to deeper layers.
+  - To reduce the impact of vanishing gradients and exploding gradients on the learning speed a problem with very deep plain networks
 
 1x1 convolution: AKA Network in Network
 **Inception Network: use different filter sizes and layer types(conv, pool) and stack output together, let NN decide the best combination.
