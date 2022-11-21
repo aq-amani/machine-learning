@@ -150,6 +150,18 @@ Z_new = γ * Z_norm + β
 ```
 when `γ` = `σ` and `β` = `μ`, then `Z_new` is equal to `Z` (no normalization).
 
+### How keras's BatchNorm with axis=3 works
+Assumption for data array shape: (m,h,w,c)
+- m is number of examples (images)
+- hxw is each image's size
+- c is channel count in each image
+
+Say we have 3 channels : R, G, and B
+1) All R channels are taken for all examples and scalar mean and variance values are calculated over them. Same is done for G and B channels.
+2) Then each pixel in each channel is normalized based on the mean and variance of that channel as calculated in 1
+
+Note: A small value epsilon is added to the variance to avoid division by zero when calculating the normalized values.
+
 # Course3: Structuring Machine Learning Projects
 
 - `Orthogonalization`: variables control single features separately instead of mixed control
