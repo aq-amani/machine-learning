@@ -258,12 +258,18 @@ CNNs can be built using `convolutional layers(conv)` only, but many architecture
   - More details in the [ResNet jupyter notebook](../jupyter_notebooks/Residual_Networks_ResNets/Residual_Networks.ipynb)
 
 1x1 convolution: AKA Network in Network
-**Inception Network: use different filter sizes and layer types(conv, pool) and stack output together, let NN decide the best combination.
-**MobileNet: less expensive computationally. depthwise separable convolution/ pointwise convolution
-MobileNet v1 VS MobileNet v2
+**Inception Network**: use different filter sizes and layer types(conv, pool) and stack output together, let NN decide the best combination.
+
+### MobileNet:
+- less expensive computationally. 
+- Has depthwise separable convolutions and pointwise convolution (normal conv but 1x1)
+- [Good MobileNet reference here(Japanese)](https://qiita.com/omiita/items/77dadd5a7b16a104df83)
+
+
 EfficientNet: adapt architecture to certain device.
 
-ImageNET.. can build on top of it using transfer learning.
+ImageNET: A large image database with more than 14 million labelled images.
+
 PCA color augmentation: Principal component analysis?
 
 # Localization/ object detection:
